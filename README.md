@@ -19,7 +19,7 @@
 
 [🚀 Hugging Face Release](https://huggingface.co/ShayonSarker/xglm-564M-GGUF) · [Meta Source Model](https://huggingface.co/facebook/xglm-564M) · [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
-👇 [View the full English and Bangla prompt/answer outputs](#user-content-longer-raw-continuations)
+👇 [View verified English and Bangla question/answer examples](#user-content-verified-question-answer-examples)
 
 </div>
 
@@ -82,17 +82,20 @@ python verify_gguf.py /path/to/XGLM-564M-Q4_K_M.gguf
 
 The verifier checks architecture, model dimensions, tokenizer settings, embedding scale, and tensor count.
 
-## 🧪 Prompt → Reply
+<a id="verified-question-answer-examples"></a>
 
-Selected deterministic Q4_K_M smoke checks at temperature 0. This is a small smoke set, not a benchmark.
+## ❓ Verified Question → Answer Examples
 
-| Prompt | Model reply | Check |
-|---|---|---|
-| `The capital of Bangladesh is` | `Dhaka.` | ✅ Correct |
-| `One, two, three,` | `four, five` | ✅ Correct |
-| `বাংলাদেশের রাজধানী` | `ঢাকার শাহবাগ এলাকায়` | ✅ Expected answer present |
+These are actual Q4_K_M completions at temperature 0. The answers below were fact-checked; incorrect, repetitive, and evasive completions were removed. This curated set is not a benchmark. XGLM is a base model, so the questions are intentionally simple.
 
-**Selected smoke score: 3/3**
+| Question | Model answer |
+|---|---|
+| What is the capital city of Bangladesh? | `Dhaka` |
+| What is the capital city of France? | `Paris` |
+| Which country has Dhaka as its capital? | `Bangladesh` |
+| What gas do humans need to breathe to survive? | `The human body needs oxygen to survive.` |
+| What color is the sky on a clear day? | `The sky is blue.` |
+| বাংলাদেশের রাজধানী কোন শহর? | `ঢাকা।` |
 
 ## 📈 Performance
 
@@ -110,40 +113,6 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 - ✅ F16 output was numerically checked against Transformers.
 - ✅ Q8_0 and Q4_K_M pass held-out English and Bengali quality gates.
 - ✅ Deterministic English and Bengali generation checks pass.
-
-<a id="longer-raw-continuations"></a>
-
-## 🗣️ Longer Raw Continuations
-
-These are full Q4_K_M completions at temperature 0 with a fixed 96-token budget. They are shown directly and intentionally unedited. The final fragment may be incomplete; repetition is genuine model behavior.
-
-### English
-
-**Prompt**
-
-```text
-A quiet morning in Dhaka. The sun rose over the rooftops, and the city slowly began to wake. Shops opened, people started their journeys, and buses moved through the busy streets.
-```
-
-**Answer**
-
-```text
-The city was filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people
-```
-
-### Bangla
-
-**Prompt**
-
-```text
-ঢাকার একটি সকাল। সূর্য ছাদের উপরে উঠল, আর শহর ধীরে ধীরে জেগে উঠতে লাগল। দোকান খুলল, মানুষ কাজে বের হল, আর বাস ধুলোমল শহরের রাস্তা দিয়ে চলতে শুরু করল।
-```
-
-**Answer**
-
-```text
-দোকানগুলোতেই ছুটে আসে ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে
-```
 
 ## 🧩 Intended Use
 
