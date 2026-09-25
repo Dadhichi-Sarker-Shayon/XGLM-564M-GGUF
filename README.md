@@ -30,6 +30,7 @@ language:
   <img alt="Bengali and Bangla" src="https://img.shields.io/badge/Bengali-Bangla-16A34A?style=for-the-badge">
   <img alt="Runtime" src="https://img.shields.io/badge/runtime-llama.cpp%20%2B%20patch-E8590C?style=for-the-badge">
   <img alt="Validated" src="https://img.shields.io/badge/validated-pass-22C55E?style=for-the-badge">
+  <img alt="F16 parity with transformers" src="https://img.shields.io/badge/F16%20parity-14%2F14%20exact-00A6A6?style=for-the-badge">
   <img alt="MIT license" src="https://img.shields.io/badge/License-MIT-7C3AED?style=for-the-badge">
 </p>
 
@@ -118,9 +119,35 @@ Every row below is a verbatim `XGLM-564M-Q4_K_M.gguf` completion produced with t
 | What is the capital of Egypt? | `The capital of Egypt is Cairo.` |
 | What is the largest ocean on Earth? | `The largest ocean on Earth is the Pacific Ocean.` |
 
-## ⚠️ Known Failures
+## 🔍 Is a wrong answer our bug or the model's? We tested it
 
-A 564M-parameter base model is not a fact database. The same settings that produced the table above also produced these, published here so the ceiling is visible:
+14 prompts (8 English Q&A, 3 plain completions, 3 Bengali) were run through `facebook/xglm-564M` in `transformers` and through our GGUFs — all greedy, 24 new tokens, same prompt strings.
+
+| Format | Exact string match vs `transformers` |
+|---|---:|
+| **F16** | **14 / 14** |
+| Q4_K_M | 5 / 14 (+2 truncated) |
+
+**The conversion is faithful.** F16 reproduces the reference model string-for-string on all 14 prompts, *including the answers that are factually wrong* — for example the reference answers "There are approximately 4,000 continents in the world" and our F16 file gives the identical sentence. A broken conversion or runtime patch could not track the reference this closely.
+
+So the 564M model's factual failures below are the upstream checkpoint's own behaviour, not an artefact of this release.
+
+## ⚠️ Why Q4_K_M looks worse than F16
+
+| Prompt | `transformers` reference | F16 (ours) | Q4_K_M (ours) |
+|---|---|---|---|
+| `Question: Which planet is closest to the Sun?\nAnswer:` | `The Sun is the closest planet to the Sun.` | `The Sun is the closest planet to the Sun.` | `The Sun is located in the constellation of the Sun.` |
+| `Question: How many continents are there?\nAnswer:` | `There are approximately 4,000 continents in the world.` | `There are approximately 4,000 continents in the world.` | `There are approximately 6,000 continents in the world.` |
+| `The capital city of France is` | `the capital of the French Republic.` | `the capital of the French Republic.` | `a city of the heart of the world. It is a city of the arts...` |
+| `প্রশ্ন: সোনার রাসায়নিক প্রতীক কী?\nউত্তর:` | `সোনার রাসায়নিক প্রতীকটি ইলেকট্রিক্যাল ইলেকট্রনিক্স, ইলে` | identical to reference | `সোনার রাসায়নিক প্রতীক হল লোহা, লোহা হল লোহা, লোহা` |
+
+**Use F16 or Q8_0 when answer fidelity matters.** At 564M parameters the model is already near its knowledge floor, so Q4_K_M tips it from "wrong but on-topic" into confabulation.
+
+Perplexity does not predict this. The table below shows Q4_K_M English PPL within +4.4% of F16, yet it disagrees with the reference on 9 of 14 prompts. PPL is a text-fluency proxy, not an accuracy metric.
+
+## ⚠️ Known Failures (Q4_K_M, the published default)
+
+These are the exact completions the released Q4_K_M file produces:
 
 | Question | Model answer (verbatim) |
 |---|---|
@@ -128,10 +155,10 @@ A 564M-parameter base model is not a fact database. The same settings that produ
 | How many days are in a leap year? | `The leap year is the time in which the Earth is in a constant state of motion.` |
 | How many continents are there? | `There are approximately 6,000 continents in the world.` |
 | What is the chemical symbol for gold? | `The chemical symbol for gold is the symbol of the gold-rich element, the gold-rich element is the symbol of` |
-| জাপানের রাজধানী কোন শহর? | `মালয়েশিয়া।` |
+| জাপানের রাজধানী কোন শহর? | `মালয়েশিয়া।` (the reference model answers essentially the same thing) |
 | সোনার রাসায়নিক প্রতীক কী? | `সোনার রাসায়নিক প্রতীক হল লোহা, লোহা হল লোহা, লোহা` |
 
-Bengali/Bangla prompting on this checkpoint is unreliable. Use the 2.9B release for Bangla work, and expect factual errors from either model outside simple lookups.
+Bengali/Bangla prompting on this checkpoint is unreliable in the reference model too. Use the 2.9B release for Bangla work, and expect factual errors from either model outside simple lookups.
 
 ## 📈 Performance
 
@@ -145,9 +172,10 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 
 ## 🔬 Validation
 
+- **Generation parity with `transformers`:** 14 greedy prompts (8 English Q&A, 3 plain completions, 3 Bengali) — F16 matches the reference output exactly on 14/14. Q4_K_M matches on 5/14. See the parity section above.
 - Token IDs match Transformers across Bengali, English, French, Chinese, and Arabic.
-- F16 output was numerically checked against Transformers.
-- Both quantized formats pass the English and Bengali quality gates.
+- Both quantized formats pass the English and Bengali held-out perplexity gates.
+- Not tested: logit-level numeric parity, and long-context behaviour beyond 24 generated tokens.
 
 ## 🧩 Intended Use
 
