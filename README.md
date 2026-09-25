@@ -19,6 +19,8 @@
 
 [🚀 Hugging Face Release](https://huggingface.co/ShayonSarker/xglm-564M-GGUF) · [Meta Source Model](https://huggingface.co/facebook/xglm-564M) · [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
+👇 [View the full English and Bangla prompt/answer outputs](#longer-raw-continuations)
+
 </div>
 
 ---
@@ -111,33 +113,35 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 
 ## 🗣️ Longer Raw Continuations
 
-These are real Q4_K_M completions at temperature 0 with a fixed 96-token budget. The outputs are intentionally unedited; repeated phrases expose the limitations of this small base model.
+These are full Q4_K_M completions at temperature 0 with a fixed 96-token budget. They are shown directly and intentionally unedited. The final fragment may be incomplete; repetition is genuine model behavior.
 
-<details>
-<summary>English creative continuation</summary>
-
-**Prompt**
-
-> A quiet morning in Dhaka. The sun rose over the rooftops, and the city slowly began to wake. Shops opened, people started their journeys, and buses moved through the busy streets.
-
-**Reply excerpt**
-
-> The city was filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. …
-
-</details>
-
-<details>
-<summary>Bangla creative continuation</summary>
+### English
 
 **Prompt**
 
-> ঢাকার একটি সকাল। সূর্য ছাদের উপরে উঠল, আর শহর ধীরে ধীরে জেগে উঠতে লাগল। দোকান খুলল, মানুষ কাজে বের হল, আর বাস ধুলোমল শহরের রাস্তা দিয়ে চলতে শুরু করল।
+```text
+A quiet morning in Dhaka. The sun rose over the rooftops, and the city slowly began to wake. Shops opened, people started their journeys, and buses moved through the busy streets.
+```
 
-**Reply excerpt**
+**Answer**
 
-> দোকানগুলোতেই ছুটে আসে ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে। …
+```text
+The city was filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people
+```
 
-</details>
+### Bangla
+
+**Prompt**
+
+```text
+ঢাকার একটি সকাল। সূর্য ছাদের উপরে উঠল, আর শহর ধীরে ধীরে জেগে উঠতে লাগল। দোকান খুলল, মানুষ কাজে বের হল, আর বাস ধুলোমল শহরের রাস্তা দিয়ে চলতে শুরু করল।
+```
+
+**Answer**
+
+```text
+দোকানগুলোতেই ছুটে আসে ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে আসে। দোকানগুলোতেই ছুটে
+```
 
 ## 🧩 Intended Use
 
