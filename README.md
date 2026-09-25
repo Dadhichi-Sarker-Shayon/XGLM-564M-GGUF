@@ -1,3 +1,25 @@
+---
+license: mit
+base_model: facebook/xglm-564M
+tags:
+  - gguf
+  - xglm
+  - multilingual
+  - bengali
+  - bangla
+  - text-generation
+language:
+  - bn
+  - en
+  - fr
+  - de
+  - ar
+  - ru
+  - zh
+  - ja
+  - es
+---
+
 <div align="center">
 
 <p>
@@ -6,96 +28,110 @@
   <img alt="GGUF formats" src="https://img.shields.io/badge/GGUF-F16%20%7C%20Q8_0%20%7C%20Q4_K_M-FFD21E?style=for-the-badge">
   <img alt="Languages" src="https://img.shields.io/badge/Languages-30%2B-00A6A6?style=for-the-badge">
   <img alt="Bengali and Bangla" src="https://img.shields.io/badge/Bengali-Bangla-16A34A?style=for-the-badge">
-  <img alt="Native llama.cpp" src="https://img.shields.io/badge/llama.cpp-native-24292F?style=for-the-badge">
+  <img alt="Runtime" src="https://img.shields.io/badge/runtime-llama.cpp%20%2B%20patch-E8590C?style=for-the-badge">
   <img alt="Validated" src="https://img.shields.io/badge/validated-pass-22C55E?style=for-the-badge">
   <img alt="MIT license" src="https://img.shields.io/badge/License-MIT-7C3AED?style=for-the-badge">
 </p>
 
 # 🌍 XGLM-564M GGUF
 
-**Native llama.cpp support and release hub for Meta’s compact multilingual XGLM model.**
+**A compact multilingual base model for Bengali, English, and global language workloads.**
 
-🌐 30+ Languages &nbsp;•&nbsp; 🇧🇩 Bengali / Bangla &nbsp;•&nbsp; 🧠 564M Parameters &nbsp;•&nbsp; ⚙️ Native GGUF &nbsp;•&nbsp; ✅ Published
+🌐 30+ Languages &nbsp;•&nbsp; 🇧🇩 Bengali / Bangla &nbsp;•&nbsp; 🧠 Base Model &nbsp;•&nbsp; ⚙️ GGUF (llama.cpp + patch) &nbsp;•&nbsp; 📦 564M Parameters &nbsp;•&nbsp; ⚖️ MIT
 
-[🚀 Hugging Face Release](https://huggingface.co/ShayonSarker/xglm-564M-GGUF) · [Meta Source Model](https://huggingface.co/facebook/xglm-564M) · [llama.cpp](https://github.com/ggml-org/llama.cpp)
+[Source model](https://huggingface.co/facebook/xglm-564M) · [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
-👇 [View verified English and Bangla question/answer examples](#user-content-verified-question-answer-examples)
+👇 [View verified English and Bangla question/answer examples](#verified-question-answer-examples)
 
 </div>
 
 ---
 
-## ✨ Overview
+## ✨ Highlights
 
-This repository contains the native `xglm` architecture patch, reproducible setup instructions, a GGUF verifier, and validation results for [`facebook/xglm-564M`](https://huggingface.co/facebook/xglm-564M).
+- XGLM support for [llama.cpp](https://github.com/ggml-org/llama.cpp) via the included `xglm-llama.cpp.patch` (upstream does not ship this architecture)
+- 256,008-token vocabulary with verified multilingual token parity
+- 2,048-token context window
+- F16, Q8_0, and importance-matrix-calibrated Q4_K_M formats
 
-The conversion preserves XGLM’s scaled embeddings, offset sinusoidal positions, biased attention, exact GELU, tied input/output embeddings, and 256,008-token UGM tokenizer.
+## 📦 Choose a Format
 
-## 📦 GGUF Formats
+| File | Status | Best for |
+|---|---|---|
+| `XGLM-564M-F16.gguf` | Published | Reference quality and maximum fidelity |
+| `XGLM-564M-Q8_0.gguf` | Published | Strong quality with a smaller memory footprint |
+| `XGLM-564M-Q4_K_M.gguf` | Published | Compact local deployment |
 
-The model binaries are hosted on Hugging Face to keep this GitHub repository lightweight.
+## ⚠️ Runtime requirement
 
-| Format | Recommended use |
-|---|---|
-| [`XGLM-564M-F16.gguf`](https://huggingface.co/ShayonSarker/xglm-564M-GGUF/blob/main/XGLM-564M-F16.gguf) | Reference quality |
-| [`XGLM-564M-Q8_0.gguf`](https://huggingface.co/ShayonSarker/xglm-564M-GGUF/blob/main/XGLM-564M-Q8_0.gguf) | Strong quality, lower memory |
-| [`XGLM-564M-Q4_K_M.gguf`](https://huggingface.co/ShayonSarker/xglm-564M-GGUF/blob/main/XGLM-564M-Q4_K_M.gguf) | Compact local inference |
-
-## 🏗️ Build GGUF End-to-End
-
-`build_gguf.py` clones the pinned llama.cpp commit, applies the native XGLM patch, downloads the pinned Meta checkpoint, creates F16, builds a multilingual importance matrix, creates Q8_0 and Q4_K_M, verifies all three files, and runs a generation smoke test.
-
-```bash
-python -m pip install -r requirements-build.txt
-python build_gguf.py
-python build_gguf.py --dry-run
-```
-
-The default build requires at least **8 GB** of free disk space. It writes artifacts to `build-xglm/output/` and does not upload or overwrite the published release.
-
-## 🧩 Apply Patch Manually
+Stock `llama.cpp` **cannot load these files** and fails with `unknown model architecture: 'xglm'`. XGLM is not in upstream llama.cpp. Apply the bundled patch against the pinned commit:
 
 ```bash
-git clone https://github.com/ggml-org/llama.cpp.git
+git clone https://github.com/ggml-org/llama.cpp
 cd llama.cpp
 git checkout 6b790a9c291b5d7af3312bbf9f0c558aa023b13e
-git apply /path/to/this/repository/xglm-llama.cpp.patch
+git apply /path/to/xglm-llama.cpp.patch
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release --target llama-completion
 ```
 
-The included patch adds:
+Alternatives that need no patch: `transformers` with `facebook/xglm-564M`, or the HF `gguf` file with a runtime that implements `xglm`.
 
-- `LLM_ARCH_XGLM` runtime support
-- Exact-erf GELU
-- XGLM embedding scaling
-- Native `XGLMForCausalLM` conversion
-- XGLM tensor mapping and sinusoidal positions
-- XGLM UGM tokenizer metadata
+## 🏗️ Rebuild
 
-## ✅ Verify a Downloaded GGUF
+The [GitHub release hub](https://github.com/Dadhichi-Sarker-Shayon/XGLM-564M-GGUF) includes the end-to-end builder, XGLM runtime patch, verifier, and pinned dependencies.
 
 ```bash
-python -m pip install -r requirements.txt
-python verify_gguf.py /path/to/XGLM-564M-Q4_K_M.gguf
+git clone https://github.com/Dadhichi-Sarker-Shayon/XGLM-564M-GGUF.git
+cd XGLM-564M-GGUF
+python -m pip install -r requirements-build.txt
+python build_gguf.py
 ```
 
-The verifier checks architecture, model dimensions, tokenizer settings, embedding scale, and tensor count.
+The build requires at least **8 GB** of free disk space. It does not overwrite this release.
+
+## 🚀 Run Locally
+
+Apply the [runtime patch](#-runtime-requirement) first, then:
+
+```bash
+hf download ShayonSarker/xglm-564M-GGUF XGLM-564M-Q4_K_M.gguf --local-dir .
+
+llama-completion -m ./XGLM-564M-Q4_K_M.gguf \
+  -p "Question: What is the capital of Japan?
+Answer:" \
+  -n 24 --temp 0
+```
+
+Expected output: `The capital of Japan is Tokyo.`
 
 <a id="verified-question-answer-examples"></a>
 
 ## ❓ Verified Question → Answer Examples
 
-These are actual Q4_K_M completions at temperature 0. The answers below were fact-checked; incorrect, repetitive, and evasive completions were removed. This curated set is not a benchmark. XGLM is a base model, so the questions are intentionally simple.
+Every row below is a verbatim `XGLM-564M-Q4_K_M.gguf` completion produced with the patched build at `--temp 0`, 24 new tokens, prompt form `Question: ...\nAnswer:`. Nothing is hand-written; rows that came out wrong are moved to the failure table below instead of being edited into looking correct. This is a smoke test, not a benchmark.
 
-| Question | Model answer |
+| Question | Model answer (verbatim) |
 |---|---|
-| What is the capital city of Bangladesh? | `Dhaka` |
-| What is the capital city of France? | `Paris` |
-| Which country has Dhaka as its capital? | `Bangladesh` |
-| What gas do humans need to breathe to survive? | `The human body needs oxygen to survive.` |
-| What color is the sky on a clear day? | `The sky is blue.` |
-| বাংলাদেশের রাজধানী কোন শহর? | `ঢাকা।` |
+| What is the capital of Japan? | `The capital of Japan is Tokyo.` |
+| What is the capital of Italy? | `The capital of Italy is Rome.` |
+| What is the capital of Egypt? | `The capital of Egypt is Cairo.` |
+| What is the largest ocean on Earth? | `The largest ocean on Earth is the Pacific Ocean.` |
+
+## ⚠️ Known Failures
+
+A 564M-parameter base model is not a fact database. The same settings that produced the table above also produced these, published here so the ceiling is visible:
+
+| Question | Model answer (verbatim) |
+|---|---|
+| Which planet is closest to the Sun? | `The Sun is located in the constellation of the Sun.` |
+| How many days are in a leap year? | `The leap year is the time in which the Earth is in a constant state of motion.` |
+| How many continents are there? | `There are approximately 6,000 continents in the world.` |
+| What is the chemical symbol for gold? | `The chemical symbol for gold is the symbol of the gold-rich element, the gold-rich element is the symbol of` |
+| জাপানের রাজধানী কোন শহর? | `মালয়েশিয়া।` |
+| সোনার রাসায়নিক প্রতীক কী? | `সোনার রাসায়নিক প্রতীক হল লোহা, লোহা হল লোহা, লোহা` |
+
+Bengali/Bangla prompting on this checkpoint is unreliable. Use the 2.9B release for Bangla work, and expect factual errors from either model outside simple lookups.
 
 ## 📈 Performance
 
@@ -107,19 +143,18 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 | Q8_0 | 59.04 | +0.29% | 12.15 | -0.02% |
 | Q4_K_M | 61.44 | +4.37% | 12.66 | +4.21% |
 
-### Validation Summary
+## 🔬 Validation
 
-- ✅ Token IDs match Transformers across Bengali, English, French, Chinese, and Arabic.
-- ✅ F16 output was numerically checked against Transformers.
-- ✅ Q8_0 and Q4_K_M pass held-out English and Bengali quality gates.
-- ✅ Deterministic English and Bengali generation checks pass.
+- Token IDs match Transformers across Bengali, English, French, Chinese, and Arabic.
+- F16 output was numerically checked against Transformers.
+- Both quantized formats pass the English and Bengali quality gates.
 
 ## 🧩 Intended Use
 
-XGLM-564M is a **base language model**, not an instruction-tuned assistant. It is useful for compact multilingual research, Bengali/English workloads, local generation, and GGUF runtime testing.
+XGLM-564M is a **base language model**, not an instruction-tuned assistant. It is suitable for compact multilingual research, Bengali/English experiments, local generation, and GGUF runtime testing.
 
-Validate important outputs independently. Generated text may be inaccurate or inappropriate.
+Outputs may be inaccurate or inappropriate. Validate important results independently.
 
 ## 📄 License
 
-MIT. See [`LICENSE`](./LICENSE) and the [upstream model card](https://huggingface.co/facebook/xglm-564M) for source-model attribution.
+MIT. See the [upstream model card](https://huggingface.co/facebook/xglm-564M) for source-model details and attribution.
