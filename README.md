@@ -1,5 +1,16 @@
 <div align="center">
 
+<p>
+  <a href="https://huggingface.co/ShayonSarker/xglm-564M-GGUF"><img alt="Hugging Face GGUF" src="https://img.shields.io/badge/Hugging%20Face-GGUF-FFD21E?style=for-the-badge"></a>
+  <img alt="XGLM model" src="https://img.shields.io/badge/Model-XGLM--564M-8A2BE2?style=for-the-badge">
+  <img alt="GGUF formats" src="https://img.shields.io/badge/GGUF-F16%20%7C%20Q8_0%20%7C%20Q4_K_M-FFD21E?style=for-the-badge">
+  <img alt="Languages" src="https://img.shields.io/badge/Languages-30%2B-00A6A6?style=for-the-badge">
+  <img alt="Bengali and Bangla" src="https://img.shields.io/badge/Bengali-Bangla-16A34A?style=for-the-badge">
+  <img alt="Native llama.cpp" src="https://img.shields.io/badge/llama.cpp-native-24292F?style=for-the-badge">
+  <img alt="Validated" src="https://img.shields.io/badge/validated-pass-22C55E?style=for-the-badge">
+  <img alt="MIT license" src="https://img.shields.io/badge/License-MIT-7C3AED?style=for-the-badge">
+</p>
+
 # 🌍 XGLM-564M GGUF
 
 **Native llama.cpp support and release hub for Meta’s compact multilingual XGLM model.**
@@ -28,7 +39,19 @@ The model binaries are hosted on Hugging Face to keep this GitHub repository lig
 | [`XGLM-564M-Q8_0.gguf`](https://huggingface.co/ShayonSarker/xglm-564M-GGUF/blob/main/XGLM-564M-Q8_0.gguf) | Strong quality, lower memory |
 | [`XGLM-564M-Q4_K_M.gguf`](https://huggingface.co/ShayonSarker/xglm-564M-GGUF/blob/main/XGLM-564M-Q4_K_M.gguf) | Compact local inference |
 
-## 🔧 Build llama.cpp
+## 🏗️ Build GGUF End-to-End
+
+`build_gguf.py` clones the pinned llama.cpp commit, applies the native XGLM patch, downloads the pinned Meta checkpoint, creates F16, builds a multilingual importance matrix, creates Q8_0 and Q4_K_M, verifies all three files, and runs a generation smoke test.
+
+```bash
+python -m pip install -r requirements-build.txt
+python build_gguf.py
+python build_gguf.py --dry-run
+```
+
+The default build requires at least **8 GB** of free disk space. It writes artifacts to `build-xglm/output/` and does not upload or overwrite the published release.
+
+## 🧩 Apply Patch Manually
 
 ```bash
 git clone https://github.com/ggml-org/llama.cpp.git
@@ -85,6 +108,36 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 - ✅ F16 output was numerically checked against Transformers.
 - ✅ Q8_0 and Q4_K_M pass held-out English and Bengali quality gates.
 - ✅ Deterministic English and Bengali generation checks pass.
+
+## 🗣️ Longer Raw Continuations
+
+These are real Q4_K_M completions at temperature 0 with a fixed 96-token budget. The outputs are intentionally unedited; repeated phrases expose the limitations of this small base model.
+
+<details>
+<summary>English creative continuation</summary>
+
+**Prompt**
+
+> A quiet morning in Dhaka. The sun rose over the rooftops, and the city slowly began to wake. Shops opened, people started their journeys, and buses moved through the busy streets.
+
+**Reply excerpt**
+
+> The city was filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. The streets were filled with people, and the streets were filled with people. …
+
+</details>
+
+<details>
+<summary>Bangla creative continuation</summary>
+
+**Prompt**
+
+> ঢাকার একটি সকাল। সূর্য ছাদের উপরে উঠল, আর শহর ধীরে ধীরে জেগে উঠতে লাগল। দোকান খুলল, মানুষ কাজে বের হল, আর বাস ধুলোমল শহরের রাস্তা দিয়ে চলতে শুরু করল।
+
+**Reply excerpt**
+
+> দোকানগুলোতেই ছুটে আসে ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে ছুটে আসে। দোকানগুলোতেই ছুটে আসে। …
+
+</details>
 
 ## 🧩 Intended Use
 
