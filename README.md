@@ -111,6 +111,8 @@ Lower perplexity (PPL) is better. Scores use separate held-out English and Benga
 - ✅ Q8_0 and Q4_K_M pass held-out English and Bengali quality gates.
 - ✅ Deterministic English and Bengali generation checks pass.
 
+<a id="longer-raw-continuations"></a>
+
 ## 🗣️ Longer Raw Continuations
 
 These are full Q4_K_M completions at temperature 0 with a fixed 96-token budget. They are shown directly and intentionally unedited. The final fragment may be incomplete; repetition is genuine model behavior.
