@@ -19,7 +19,7 @@
 
 [🚀 Hugging Face Release](https://huggingface.co/ShayonSarker/xglm-564M-GGUF) · [Meta Source Model](https://huggingface.co/facebook/xglm-564M) · [llama.cpp](https://github.com/ggml-org/llama.cpp)
 
-👇 [View the full English and Bangla prompt/answer outputs](#longer-raw-continuations)
+👇 [View the full English and Bangla prompt/answer outputs](#user-content-longer-raw-continuations)
 
 </div>
 
